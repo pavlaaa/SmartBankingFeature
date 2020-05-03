@@ -9,45 +9,19 @@ package com.pavdosanjh.main;
  */
 public class CurrentAccount {
 
-	private final String CURRENT_ACCOUNT_TYPE = "CURRENT";
+	private double currentBalance;
 
-	private   int currentAccountId;
-	private  double currentBalance = 0.0;
-	
-	private int accountId = 0;
+	private int accountId;
 	private String accountType;
-	private double transactionValue = 0.0;
-	
-	
-	public CurrentAccount (int accountId, String accountType,
-			double transactionValue) {
-		this.currentAccountId = accountId;
+	private double transactionBalance;
+
+	public CurrentAccount(int accountId, String accountType, double transactionBalance) {
+		this.accountId = accountId;
 		this.accountType = accountType;
-		this.transactionValue = transactionValue;
-		
+		this.transactionBalance = transactionBalance;
 	}
 
-	public void calcAccountBalance() {
-		Transaction transaction = new Transaction();
-		String type  = transaction.getAccountType();
-		System.out.println(type);
-		
-		if (CURRENT_ACCOUNT_TYPE.equals(transaction.getAccountType())) {
-			currentBalance = getCurrentBalance() + transaction.getTransactionValue();
-			setCurrentBalance(currentBalance);
-			System.out.println();
-			System.out.println(transaction.getAccountType() + " "
-					+ Formatting.formatTransactionValue(transaction.getTransactionValue()));
-			System.out.println("----------------------------------------------------------------------");
-		}
-	}
-	
-//	if (CURRENT_ACCOUNT_TYPE.equals(transaction.getAccountType())) {
-//		currAcc.setCurrentAccountId(transaction.getAccountId());
-//	}
-
-	public  Boolean isOverdrawn() {
-
+	public Boolean isOverdrawn() {
 		if (getCurrentBalance() < 0.0) {
 			System.out.println("** YOUR CURRENT ACCOUNT IS OVERDRAWN **");
 			System.out.println();
@@ -68,17 +42,27 @@ public class CurrentAccount {
 		this.currentBalance = currentBalance;
 	}
 
-	public  int getCurrentAccountId() {
-		return currentAccountId;
+	public int getAccountId() {
+		return accountId;
 	}
 
-	public  void setCurrentAccountId(int currentAccountId) {
-		Transaction transaction = new Transaction();
-		
-		if (CURRENT_ACCOUNT_TYPE.equals(transaction.getAccountType())) {
-			currentAccountId = transaction.getAccountId();
-		}
+	public void setAccountId(int accountId) {
+		this.accountId = accountId;
+	}
 
-		this.currentAccountId = currentAccountId;
+	public String getAccountType() {
+		return accountType;
+	}
+
+	public void setAccountType(String accountType) {
+		this.accountType = accountType;
+	}
+
+	public double getTransactionBalance() {
+		return transactionBalance;
+	}
+
+	public void setTransactionBalance(double transactionBalance) {
+		this.transactionBalance = transactionBalance;
 	}
 }

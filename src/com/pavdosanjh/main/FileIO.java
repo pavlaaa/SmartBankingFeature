@@ -18,8 +18,19 @@ public class FileIO {
 
 	private static String header;
 	private static List<String> ledger;
+	private TransactionData transaction;
 
-	public void readFile(Path readFile) throws FileNotFoundException {
+	private final String CURRENT_ACCOUNT_TYPE = "CURRENT";
+
+	public FileIO(TransactionData transaction) {
+		this.transaction = transaction;
+	}
+
+	public FileIO() {
+
+	}
+
+	public void readFileThenPopulateTransactionData(Path readFile) throws FileNotFoundException {
 
 		Path file = readFile;
 		Path csvFile = file;
@@ -35,38 +46,46 @@ public class FileIO {
 
 		try (BufferedReader reader = Files.newBufferedReader(csvFile)) {
 
-			// Store all transactions in List.
 			setLedger(Files.readAllLines(file, StandardCharsets.UTF_8));
-
-			// Read
 			setHeader(reader.readLine());
 
 			String line;
+			double currentTransactionValue = 0.0;
+			double savingsTransactionValue = 0.0;
 			while ((line = reader.readLine()) != null) {
 				String[] currentLine = line.split(",");
-				try {
-					int accountId = Integer.parseInt(currentLine[0]);
-					String accountType = currentLine[1];
-					String initiatorType = currentLine[2];
-					String dateTime = Formatting.formatDateTime(currentLine[3]);
-					double transactionValue = Double.parseDouble(currentLine[4]);
-
-					
-					Transaction t = new Transaction(accountId, accountType, initiatorType, dateTime, transactionValue);
-//					t.setAccountId(accountId);
-//					t.setAccountType(accountType);
-//					t.setDateTime(dateTime);
-//					t.setInitiatorType(initiatorType);
-//					t.setTransactionValue(transactionValue);
-					
-				} catch (NumberFormatException e) {
-					e.printStackTrace();
-				}
+				populateTransactionData(currentLine, currentTransactionValue, savingsTransactionValue);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
 
+	private void populateTransactionData(String[] currentLine, double currentTransactionBalance,
+			double savingsTransactionBalance) {
+		try {
+			int accountId = Integer.parseInt(currentLine[0]);
+			String accountType = currentLine[1];
+			String initiatorType = currentLine[2];
+			String dateTime = Formatting.formatDateTime(currentLine[3]);
+			double transactionValue = Double.parseDouble(currentLine[4]);
+
+			if (CURRENT_ACCOUNT_TYPE.equals(accountType)) {
+				transaction.setCurrentAccountId(accountId);
+				transaction.setCurrentAccountType(accountType);
+				currentTransactionBalance = currentTransactionBalance + transactionValue;
+				transaction.setCurrentTransactionBalance(currentTransactionBalance);
+			} else {
+				transaction.setSavingsAccountId(accountId);
+				transaction.setSavingsAccountType(accountType);
+				savingsTransactionBalance = savingsTransactionBalance + transactionValue;
+				transaction.setSavingsTransactionBalance(savingsTransactionBalance);
+			}
+			transaction.setInitiatorType(initiatorType);
+			transaction.setDateTime(dateTime);
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void writeFile(Path writeFile) {
@@ -98,11 +117,11 @@ public class FileIO {
 
 	}
 
-	public  String getHeader() {
+	public String getHeader() {
 		return header;
 	}
 
-	public  void setHeader(String header) {
+	public void setHeader(String header) {
 		FileIO.header = header;
 	}
 
