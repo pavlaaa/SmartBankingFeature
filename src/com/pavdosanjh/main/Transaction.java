@@ -7,13 +7,13 @@ package com.pavdosanjh.main;
 
 public class Transaction {
 
-	private static int accountId = 0;
-	private static String accountType;
-	private static String initiatorType;
-	private static String dateTime;
-	private static double transactionValue = 0.0;
+	public int accountId = 0;
+	public String accountType;
+	public String initiatorType;
+	public String dateTime;
+	public double transactionValue = 0.0;
 
-	private static int noOfTransactions;
+	private int noOfTransactions;
 
 	public Transaction(int accountId, String accountType, String initiatorType, String dateTime,
 			double transactionValue) {
@@ -22,81 +22,100 @@ public class Transaction {
 		System.out.println("----------------------------------------------------------------------");
 		System.out.println("Creating Transaction.....");
 		noOfTransactions++;
-		System.out.println("Transactino no: " + noOfTransactions);
+		System.out.println("Transaction no: " + noOfTransactions);
 		System.out.println();
 
-		Transaction.accountId = accountId;
-		Transaction.accountType = accountType;
-		Transaction.dateTime = dateTime;
-		Transaction.initiatorType = initiatorType;
-		Transaction.transactionValue = transactionValue;
+		this.accountId = accountId;
+		this.accountType = accountType;
+		
+		System.out.println(this.accountType);
+		
+		this.dateTime = dateTime;
+		this.initiatorType = initiatorType;
+		this.transactionValue = transactionValue;
+		
+//		this.setAccountId(accountId);
+//		this.setAccountType(accountType);
+//		this.setDateTime(dateTime);
+//		this.setInitiatorType(initiatorType);
+//		this.setTransactionValue(transactionValue);
 
 		System.out.println(accountId + " " + accountType + " " + initiatorType + " " + dateTime + " "
 				+ Formatting.formatTransactionValue(transactionValue) + " ");
 
-		BankAccount.calcAccountBalances();
-
-		BankAccount.printAccountBalances();
-		BankAccount.saveAccountId();
+		BankAccount bankAcc = new BankAccount(accountId, dateTime, transactionValue);
+		bankAcc.calcAccountBalances();
+		bankAcc.printAccountBalances();
+		bankAcc.saveAccountId();
 
 		System.out.println("----------------------------------------------------------------------");
 		System.out.println();
 	}
 
-	public static void setAccountId(int accountId) {
-		// Transaction.accountId = accountId;
-
-		if (accountType.equals("CURRENT")) {
-			CurrentAccount.setCurrentAccountId(accountId);
-		} else {
-			SavingsAccount.setSavingsAccountId(accountId);
-		}
-
-		Transaction.accountId = accountId;
+	public Transaction() {
+		// TODO Auto-generated constructor stub
+		
+		System.out.println("THIS IS BEING CALLED");
 	}
 
-	public static String getAccountType() {
+	public void setAccountId(int accountId) {
+		CurrentAccount curAcc = new CurrentAccount(accountId, accountType, transactionValue);
+		SavingsAccount savAcc = new SavingsAccount(accountId, accountType, transactionValue);
+
+		if (accountType.equals("CURRENT")) {
+			curAcc.setCurrentAccountId(accountId);
+		} else {
+			savAcc.setSavingsAccountId(accountId);
+		}
+
+		this.accountId = accountId;
+	}
+	
+	public int getAccountId() {
+		return accountId;
+	}
+	
+
+	public String getAccountType() {
 		return accountType;
 	}
 
-	public static int getAccountId() {
-		return accountId;
+
+
+	public void setAccountType(String accountType) {
+		this.accountType = accountType;
 	}
 
-	public static void setAccountType(String accountType) {
-		Transaction.accountType = accountType;
-	}
-
-	public static String getInitiatorType() {
+	public String getInitiatorType() {
 		return initiatorType;
 	}
 
-	public static void setInitiatorType(String initiatorType) {
-		Transaction.initiatorType = initiatorType;
+	public void setInitiatorType(String initiatorType) {
+		this.initiatorType = initiatorType;
 	}
 
-	public static String getDateTime() {
+	public String getDateTime() {
 		return dateTime;
 	}
 
-	public static void setDateTime(String dateTime) {
-		Transaction.dateTime = dateTime;
+	public void setDateTime(String dateTime) {
+		this.dateTime = dateTime;
 	}
 
-	public static double getTransactionValue() {
+	public double getTransactionValue() {
 		return transactionValue;
 	}
 
-	public static void setTransactionValue(double transactionValue) {
-		Transaction.transactionValue = transactionValue;
+	public void setTransactionValue(double transactionValue) {
+		this.transactionValue = transactionValue;
 	}
 
-	public static int getNoOfTransactions() {
+	public int getNoOfTransactions() {
 		return noOfTransactions;
 	}
 
-	public static void setNoOfTransactions(int noOfTransactions) {
-		Transaction.noOfTransactions = noOfTransactions;
+	public void setNoOfTransactions(int noOfTransactions) {
+		this.noOfTransactions = noOfTransactions;
 	}
 
 }

@@ -19,7 +19,7 @@ public class FileIO {
 	private static String header;
 	private static List<String> ledger;
 
-	public static void readFile(Path readFile) throws FileNotFoundException {
+	public void readFile(Path readFile) throws FileNotFoundException {
 
 		Path file = readFile;
 		Path csvFile = file;
@@ -43,7 +43,6 @@ public class FileIO {
 
 			String line;
 			while ((line = reader.readLine()) != null) {
-
 				String[] currentLine = line.split(",");
 				try {
 					int accountId = Integer.parseInt(currentLine[0]);
@@ -52,7 +51,14 @@ public class FileIO {
 					String dateTime = Formatting.formatDateTime(currentLine[3]);
 					double transactionValue = Double.parseDouble(currentLine[4]);
 
+					
 					Transaction t = new Transaction(accountId, accountType, initiatorType, dateTime, transactionValue);
+//					t.setAccountId(accountId);
+//					t.setAccountType(accountType);
+//					t.setDateTime(dateTime);
+//					t.setInitiatorType(initiatorType);
+//					t.setTransactionValue(transactionValue);
+					
 				} catch (NumberFormatException e) {
 					e.printStackTrace();
 				}
@@ -63,7 +69,7 @@ public class FileIO {
 
 	}
 
-	public static void writeFile(Path writeFile) {
+	public void writeFile(Path writeFile) {
 		// Write out CSV File.
 		Path file = writeFile;
 
@@ -92,19 +98,19 @@ public class FileIO {
 
 	}
 
-	public static String getHeader() {
+	public  String getHeader() {
 		return header;
 	}
 
-	public static void setHeader(String header) {
+	public  void setHeader(String header) {
 		FileIO.header = header;
 	}
 
-	public static List<String> getLedger() {
+	public List<String> getLedger() {
 		return ledger;
 	}
 
-	public static void setLedger(List<String> ledger) {
+	public void setLedger(List<String> ledger) {
 		FileIO.ledger = ledger;
 	}
 

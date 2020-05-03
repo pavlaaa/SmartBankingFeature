@@ -9,23 +9,41 @@ import java.util.Date;
 
 public class SavingsAccount {
 
-	private static final String CURRENT_ACCOUNT_TYPE = "CURRENT";
-	private static final String SAVINGS_ACCOUNT_TYPE = "SAVINGS";
-	private static final String SYSTEM_INITIATOR_TYPE = "SYSTEM";
+	private  final String CURRENT_ACCOUNT_TYPE = "CURRENT";
+	private  final String SAVINGS_ACCOUNT_TYPE = "SAVINGS";
+	private  final String SYSTEM_INITIATOR_TYPE = "SYSTEM";
 
-	private static double savingsTransfer;
-	private static double currentTransfer;
+	private  double savingsTransfer;
+	private  double currentTransfer;
 
-	private static int savingsAccountId;
-	private static double savingsBalance = 0.0;
+	private  int savingsAccountId;
+	private  double savingsBalance = 0.0;
+	
+	private int accountId = 0;
+	private String accountType;
+	private double transactionValue = 0.0;
+	
+	
+	public SavingsAccount (int accountId, String accountType,
+			double transactionValue) {
+		this.accountId = accountId;
+		this.accountType = accountType;
+		this.transactionValue = transactionValue;
+		
+	}
 
-	public static void transferToCurrent() {
+	
+	public void transferToCurrent() {
+		
+		CurrentAccount currAcc = new CurrentAccount(accountId, CURRENT_ACCOUNT_TYPE, currentTransfer);
+		
+		
 		System.out.println("Transfer transaction will be made from your savings account.");
 		System.out.println();
 
 		calculateTransferValue();
 
-		int accountId = CurrentAccount.getCurrentAccountId();
+		int accountId = currAcc.getCurrentAccountId();
 		String accountType = CURRENT_ACCOUNT_TYPE;
 		String initiatorType = SYSTEM_INITIATOR_TYPE;
 		Date date = new Date();
@@ -37,7 +55,9 @@ public class SavingsAccount {
 
 		String stringCurrent = accountId + "," + accountType + "," + initiatorType + "," + dateTime + ","
 				+ transactionValue;
-		FileIO.getLedger().add(stringCurrent);
+		FileIO fio = new FileIO();
+		
+		fio.getLedger().add(stringCurrent);
 
 		System.out.println("** TRANSFER RECEIVED ** From SAVINGS to CURRENT");
 		System.out.println(accountId + " " + accountType + " " + initiatorType + " " + dateTime + " "
@@ -54,7 +74,7 @@ public class SavingsAccount {
 		String stringSavings = accountId + "," + accountType + "," + initiatorType + "," + dateTime + ","
 				+ transactionValue;
 
-		FileIO.getLedger().add(stringSavings);
+		fio.getLedger().add(stringSavings);
 
 		System.out.println("** TRANSFER ** From SAVINGS to CURRENT");
 		System.out.println(accountId + " " + accountType + " " + initiatorType + " " + dateTime + " "
@@ -66,67 +86,79 @@ public class SavingsAccount {
 
 	}
 
-	private static void setTransactionParameters(int accountId, String accountType, String initiatorType,
+	private void setTransactionParameters(int accountId, String accountType, String initiatorType,
 			String dateTime, double transactionValue) {
-		Transaction.setAccountId(accountId);
-		Transaction.setAccountType(accountType);
-		Transaction.setInitiatorType(initiatorType);
-		Transaction.setDateTime(dateTime);
-		Transaction.setTransactionValue(transactionValue);
+		Transaction transaction = new Transaction(accountId, dateTime, dateTime, dateTime, transactionValue);
+		
+		transaction.setAccountId(accountId);
+		transaction.setAccountType(accountType);
+		transaction.setInitiatorType(initiatorType);
+		transaction.setDateTime(dateTime);
+		transaction.setTransactionValue(transactionValue);
 	}
 
-	private static void calculateTransferValue() {
-		if (getSavingsBalance() < -CurrentAccount.getCurrentBalance()) {
+	private void calculateTransferValue() {
+		CurrentAccount curAcc = new CurrentAccount(accountId, CURRENT_ACCOUNT_TYPE, currentTransfer);
+		
+		if (getSavingsBalance() < -curAcc.getCurrentBalance()) {
 			savingsTransfer = +getSavingsBalance();
 			currentTransfer = -getSavingsBalance();
 		} else {
-			savingsTransfer = +CurrentAccount.getCurrentBalance();
-			currentTransfer = -CurrentAccount.getCurrentBalance();
+			savingsTransfer = +curAcc.getCurrentBalance();
+			currentTransfer = -curAcc.getCurrentBalance();
 		}
 	}
 
-	public static void calcAccountBalance() {
+	public void calcAccountBalance() {
+		Transaction transaction = new Transaction();
+		
+		System.out.println(transaction.getAccountType());
 
-		if (SAVINGS_ACCOUNT_TYPE.equals(Transaction.getAccountType())) {
-			savingsBalance = getSavingsBalance() + Transaction.getTransactionValue();
-
+		System.out.println("Pav you are here 1");
+		if (SAVINGS_ACCOUNT_TYPE.equals(transaction.getAccountType())) {
+			savingsBalance = getSavingsBalance() + transaction.getTransactionValue();
+			System.out.println("Pav you are here");
+			
 			if (savingsBalance < 0)
 				throw new IllegalArgumentException("Savings Account cannot be negative / overdrawn");
 
 			System.out.println();
-			System.out.println(Transaction.getAccountType() + " "
-					+ Formatting.formatTransactionValue(Transaction.getTransactionValue()));
+			System.out.println(transaction.getAccountType() + " "
+					+ Formatting.formatTransactionValue(transaction.getTransactionValue()));
 		}
 
 	}
 
-	public static double getSavingsTransfer() {
+	public  double getSavingsTransfer() {
 		return savingsTransfer;
 	}
 
-	public static void setSavingsTransfer(double savingsTransfer) {
-		SavingsAccount.savingsTransfer = savingsTransfer;
+	public  void setSavingsTransfer(double savingsTransfer) {
+		SavingsAccount savAcc = new SavingsAccount(accountId, CURRENT_ACCOUNT_TYPE, savingsTransfer);
+		
+		savAcc.savingsTransfer = savingsTransfer;
 	}
 
-	public static int getSavingsAccountId() {
+	public  int getSavingsAccountId() {
 		return savingsAccountId;
 	}
 
-	public static void setSavingsAccountId(int savingsAccountId) {
-
-		if (SAVINGS_ACCOUNT_TYPE.equals(Transaction.getAccountType())) {
-			savingsAccountId = Transaction.getAccountId();
+	public void setSavingsAccountId(int savingsAccountId) {
+		Transaction transaction = new Transaction();
+		
+		if (SAVINGS_ACCOUNT_TYPE.equals(transaction.getAccountType())) {
+			savingsAccountId = transaction.getAccountId();
 		}
 
-		SavingsAccount.savingsAccountId = savingsAccountId;
+		this.savingsAccountId = savingsAccountId;
 	}
 
-	public static double getSavingsBalance() {
+	public double getSavingsBalance() {
 		return savingsBalance;
 	}
 
-	public static void setSavingsBalance(double savingsBalance) {
-		SavingsAccount.savingsBalance = savingsBalance;
+	public void setSavingsBalance(double savingsBalance) {
+		this.savingsBalance = savingsBalance;
 	}
 
 }

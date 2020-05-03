@@ -19,25 +19,29 @@ public class Main {
 		Path writeFile = Paths.get(System.getProperty("user.dir")).resolve("testData")
 				.resolve("customer-1234567-ledger-write.csv");
 
-//		Path readFile = Paths.get(System.getProperty("user.dir")).resolve("testData")
-//				.resolve("customer-1234567-ledger.csv");
+	//	Path readFile = Paths.get(System.getProperty("user.dir")).resolve("testData")
+		//		.resolve("customer-1234567-ledger.csv");
 
 		Path readFile = Paths.get(System.getProperty("user.dir")).resolve("testData").resolve("customer2.csv");
 
 		// Read CSV file
+		FileIO fio = new FileIO();
 		try {
-			FileIO.readFile(readFile);
+			fio.readFile(readFile);
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 		// If current account is overdrawn transfer money from Savings
-		if (CurrentAccount.isOverdrawn()) {
-			SavingsAccount.transferToCurrent();
+		CurrentAccount curAcc = new CurrentAccount(0, null, 0);
+		SavingsAccount savAcc  = new SavingsAccount(0, null, 0);
+		
+		if (curAcc.isOverdrawn()) {
+			savAcc.transferToCurrent();
 			// Write CSV file
 			try {
-				FileIO.writeFile(writeFile);
+				fio.writeFile(writeFile);
 
 			} catch (Exception e) {
 				e.printStackTrace();
